@@ -10,34 +10,16 @@ const API_CONFIG = {
 // Helper function to upload image to imgbb and get the new URL
 async function uploadToImgbb(imageUrl) {
   try {
-    // Fetch the image as blob
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
+    const baseUrl = API_CONFIG.baseUrl || window.location.origin;
+    const url = `${baseUrl}/.netlify/functions/upload-to-imgbb?url=${encodeURIComponent(imageUrl)}`;
 
-    // Convert blob to base64
-    const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-    });
+    const response = await fetch(url);
+    const data = await response.json();
 
-    // Upload to imgbb
-    const formData = new FormData();
-    formData.append('key', API_CONFIG.imgbbApiKey);
-    formData.append('image', base64);
-
-    const uploadResponse = await fetch('https://api.imgbb.com/1/upload', {
-    method: 'POST',
-    body: formData
-    });
-
-    const uploadData = await uploadResponse.json();
-
-    if (uploadData.success) {
-    return uploadData.data.url;
+    if (response.ok && data.url) {
+      return data.url;
     } else {
-    throw new Error('Falha ao enviar imagem para imgbb');
+      throw new Error(data.error || 'Falha ao enviar imagem para imgbb');
     }
   } catch (error) {
     console.error('Erro uploadToImgbb:', error);
@@ -80,7 +62,8 @@ function LoginForm({ onLogin }) {
     width: '100%',
     maxWidth: '400px'
     }}>
-    <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
+    <h1 style={{ textAlign: 'center',
+    marginBottom: '30px' }}>
     <i className="fa-solid fa-lock"></i> Admin Login
     </h1>
 
@@ -299,8 +282,8 @@ function AdminPanel() {
 
     try {
     // If flyer URL starts with https://scontent, upload to imgbb and replace flyer URL
-    if (flyer && flyer.startsWith('https://scontent')) {
-    showMessage('Processando URL do flyer do Facebook...', 'success');
+    if (flyer && (flyer.startsWith('https://scontent') || flyer.startsWith('https://media.sssinstagram.com'))) {
+    showMessage('Processando URL do flyer do Facebook ou Instagram...', 'success');
     flyer = await uploadToImgbb(flyer);
     showMessage('Flyer do Facebook enviado para imgbb com sucesso!');
     }
@@ -338,6 +321,7 @@ function AdminPanel() {
     });
 
     const data = await response.json();
+	console.log('Resposta da API:', data);
 
     if (!data.success) {
     throw new Error(data.error || 'Erro ao salvar');
@@ -569,7 +553,9 @@ function AdminPanel() {
     )}
 
     {loading && (
-    <div style={{ color: '#ffb347', textAlign: 'center', margin: '20px 0' }}>
+    <div style={{ color: '#ffb347',
+    textAlign: 'center',
+    margin: '20px 0' }}>
     Carregando shows...
     </div>
     )}
