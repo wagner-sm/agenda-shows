@@ -269,7 +269,7 @@ function AdminPanel() {
     setEditingRow(null);
   }, []);
 
-  // Modified saveShow to handle Facebook flyer URLs starting with https://scontent
+  // Modified saveShow to handle Facebook or Istagram flyer URLs
   const saveShow = useCallback(async (e) => {
     e.preventDefault();
 
@@ -285,7 +285,7 @@ function AdminPanel() {
     if (flyer && (flyer.startsWith('https://scontent') || flyer.startsWith('https://media.sssinstagram.com'))) {
     showMessage('Processando URL do flyer do Facebook ou Instagram...', 'success');
     flyer = await uploadToImgbb(flyer);
-    showMessage('Flyer do Facebook enviado para imgbb com sucesso!');
+    showMessage('Flyer do Facebook ou Instagram enviado para imgbb com sucesso!');
     }
 
     const baseUrl = getBaseUrl();
