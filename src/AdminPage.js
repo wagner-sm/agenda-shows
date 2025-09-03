@@ -281,8 +281,7 @@ function AdminPanel() {
 
     try {
     // If flyer URL starts with https://scontent, upload to imgbb and replace flyer URL
-    if (flyer && (flyer.startsWith('https://scontent') || flyer.startsWith('https://media.sssinstagram.com') || flyer.startsWith('https://dl.snapcdn.app')
-		|| flyer.startsWith('https://pbs.twimg'))) {
+    if (flyer && (flyer.startsWith('https://scontent') || flyer.startsWith('https://dl.snapcdn.app') || flyer.startsWith('https://pbs.twimg'))) {
     showMessage('Processando URL do flyer...', 'success');
     flyer = await uploadToImgbb(flyer);
     showMessage('Flyer enviado para imgbb com sucesso!');
