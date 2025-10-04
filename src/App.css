@@ -34,7 +34,7 @@ body {
     }
     .show-card img {
     width: 100%;
-    height: 235px;
+    height: 250px;
     object-fit: contain;
     background: #111;
     cursor: pointer;
