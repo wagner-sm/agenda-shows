@@ -80,6 +80,16 @@ function ShowsPage() {
           if (dataA.getTime() !== dataB.getTime()) {
             return dataA - dataB;
           }
+		  
+		  // Se as datas forem iguais, ordena por cidade
+          const cidadeComparison = (a.cidade || '').localeCompare(b.cidade || '', 'pt-BR', {
+            sensitivity: 'base',
+            ignorePunctuation: true
+          });
+          
+          if (cidadeComparison !== 0) {
+            return cidadeComparison;
+          }
 
           // Se as datas forem iguais, ordena por nome do artista
           return a.artista.localeCompare(b.artista, 'pt-BR', {
