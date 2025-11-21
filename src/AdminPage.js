@@ -361,36 +361,43 @@ function AdminPanel() {
   }, [dataParaInput]);
 
   const deleteShow = useCallback(async (linha, artista) => {
-    if (!window.confirm(`Tem certeza que deseja excluir o show de "${artista}"?`)) return;
+  if (!window.confirm(`Tem certeza que deseja excluir o show de "${artista}"?`)) return;
 
-    try {
+  try {
+    const hoje = new Date();
+    hoje.setDate(hoje.getDate() - 1);
+
+    const dia = String(hoje.getDate()).padStart(2, "0");
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const ano = hoje.getFullYear();
+    const dataOntem = `${dia}/${mes}/${ano}`;
+
     const baseUrl = getBaseUrl();
     const url = `${baseUrl}/.netlify/functions/sheets/${API_CONFIG.spreadsheetId}/update`;
 
-    const values = [['', '', '', '', '', '']];
-    const range = `Página1!A${linha}:F${linha}`;
+    const range = `Página1!B${linha}:B${linha}`;
+    const values = [[dataOntem]];
 
     const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ range, values })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ range, values }),
     });
 
     const data = await response.json();
 
     if (!data.success) {
-    throw new Error(data.error || 'Erro ao excluir');
+      throw new Error(data.error || "Erro ao alterar data");
     }
 
-    showMessage('Show excluído com sucesso!');
+    showMessage(`Data atualizada para ${dataOntem}`);
     loadShows();
     resetForm();
-
-    } catch (error) {
-    console.error('Erro ao excluir:', error);
-    showMessage(`Erro ao excluir show: ${error.message}`, 'error');
-    }
-  }, [showMessage, loadShows, resetForm, getBaseUrl]);
+  } catch (error) {
+    console.error("Erro ao excluir:", error);
+    showMessage(`Erro ao excluir: ${error.message}`, "error");
+  }
+}, [showMessage, loadShows, resetForm, getBaseUrl]);
 
   useEffect(() => {
     const init = async () => {
